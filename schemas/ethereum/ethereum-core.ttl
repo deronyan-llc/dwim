@@ -1,0 +1,73 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <http://schema.org/> .
+@prefix eth: <http://example.org/ethereum/> .
+
+eth:Block a rdfs:Class ;
+  rdfs:label "Block" ;
+  rdfs:subClassOf schema:StructuredValue .
+
+eth:Transaction a rdfs:Class ;
+  rdfs:label "Transaction" ;
+  rdfs:subClassOf schema:StructuredValue .
+
+eth:difficulty a rdf:Property ;
+  rdfs:label "difficulty" ;
+  rdfs:domain eth:Block ;
+  rdfs:range xsd:string .
+
+eth:extraData a rdf:Property ;
+  rdfs:label "extraData" ;
+  rdfs:domain eth:Block ;
+  rdfs:range xsd:string .
+
+eth:gasLimit a rdf:Property ;
+  rdfs:label "gasLimit" ;
+  rdfs:domain eth:Block ;
+  rdfs:range xsd:string .
+
+eth:gasUsed a rdf:Property ;
+  rdfs:label "gasUsed" ;
+  rdfs:domain eth:Block ;
+  rdfs:range xsd:string .
+
+eth:hash a rdf:Property ;
+  rdfs:label "hash" ;
+  rdfs:domain eth:Block ;
+  rdfs:range xsd:string .
+
+eth:hasHash 
+  a rdf:Property ;
+rdfs:label "has hash" ;
+rdfs:comment "A property representing the hash of a block or transaction" ;
+rdfs:domain [ a owl:Class; owl:unionOf (eth:Block eth:Transaction) ] ;
+rdfs:range xsd:string .
+
+eth:hasFrom
+a rdf:Property ;
+rdfs:label "has from" ;
+rdfs:comment "A property representing the sender of a transaction" ;
+rdfs:domain eth:Transaction ;
+rdfs:range schema:Text .
+
+eth:hasTo
+a rdf:Property ;
+rdfs:label "has to" ;
+rdfs:comment "A property representing the recipient of a transaction" ;
+rdfs:domain eth:Transaction ;
+rdfs:range schema:Text .
+
+eth:hasValue
+a rdf:Property ;
+rdfs:label "has value" ;
+rdfs:comment "A property representing the value of a transaction in Ether" ;
+rdfs:domain eth:Transaction ;
+rdfs:range schema:Number .
+
+eth:hasGasPrice
+a rdf:Property ;
+rdfs:label "has gas price" ;
+rdfs:comment "A property representing the gas price of a transaction" ;
+rdfs:domain eth:Transaction ;
+rdfs:range schema:Number .

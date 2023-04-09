@@ -1,0 +1,69 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix schema: <http://schema.org/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix erc721: <https://www.example.com/erc721/> .
+
+erc721:Token
+    a rdfs:Class ;
+    rdfs:label "Non-fungible Token" ;
+    rdfs:comment "A non-fungible token (NFT) as specified by ERC-721" ;
+    rdfs:subClassOf schema:Product .
+
+erc721:tokenId
+    a rdf:Property ;
+    rdfs:label "Token ID" ;
+    rdfs:comment "The unique identifier of the token" ;
+    rdfs:domain erc721:Token ;
+    rdfs:range xsd:integer .
+
+erc721:owner
+    a rdf:Property ;
+    rdfs:label "Token owner" ;
+    rdfs:comment "The owner of the token" ;
+    rdfs:domain erc721:Token ;
+    rdfs:range
+foaf:Agent .
+
+erc721:contractAddress
+a rdf:Property ;
+rdfs:label "Contract address" ;
+rdfs:comment "The address of the ERC-721 smart contract" ;
+rdfs:domain erc721:Token ;
+rdfs:range xsd:string .
+
+erc721:tokenURI
+a rdf:Property ;
+rdfs:label "Token URI" ;
+rdfs:comment "The URI containing metadata about the token" ;
+rdfs:domain erc721:Token ;
+rdfs:range xsd:anyURI .
+
+erc721:transfer
+a rdf:Property ;
+rdfs:label "Transfer event" ;
+rdfs:comment "An event emitted when a token is transferred" ;
+rdfs:domain erc721:Token ;
+rdfs:range erc721:TransferEvent .
+
+erc721:TransferEvent
+a rdfs:Class ;
+rdfs:label "Transfer event" ;
+rdfs:comment "An event emitted when a token is transferred" ;
+rdfs:subClassOf schema:Event .
+
+erc721:from
+a rdf:Property ;
+rdfs:label "From address" ;
+rdfs:comment "The address transferring the token" ;
+rdfs:domain erc721:TransferEvent ;
+rdfs:range xsd:string .
+
+erc721:to
+a rdf:Property ;
+rdfs:label "To address" ;
+rdfs:comment "The address receiving the token" ;
+rdfs:domain erc721:TransferEvent ;
+rdfs:range xsd:string .
