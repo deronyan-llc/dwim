@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"os"
+	"regexp"
 	"strings"
 	"text/template"
 
@@ -72,23 +73,44 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 	return classes, nil
 }
 
+func localName(uri string) string {
+	parts := strings.Split(uri, "#")
+	if len(parts) == 1 {
+		parts = strings.Split(uri, "/")
+	}
+	return parts[len(parts)-1]
+}
+
+func sanitizeName(name string) string {
+	reg, _ := regexp.Compile("[^a-zA-Z0-9]+")
+	return reg.ReplaceAllString(name, "")
+}
+
 // generateGoCode generates GoLang code based on the given SchemaClass map.
 func generateGoCode(classes map[string]SchemaClass) {
 	const tmpl = `package main
 
-type {{ .Name }} struct {
+type {{ .Name | localName | sanitizeName | title }} struct {
 {{- range .Properties }}
-	{{ .Name }} {{ .Range }}
+	{{ .Name | localName | sanitizeName | title }} {{ .Range | localName | sanitizeName | title}} ` + "`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" + `
 {{- end }}
 }
 `
 
-	t := template.Must(template.New("class").Parse(tmpl))
+	funcMap := template.FuncMap{
+		"title":        strings.Title,
+		"lower":        strings.ToLower,
+		"localName":    localName,
+		"sanitizeName": sanitizeName,
+	}
+
+	t := template.Must(template.New("class").Funcs(funcMap).Parse(tmpl))
 
 	// Generate GoLang code for each class in the map.
 	for _, class := range classes {
+		localClassName := sanitizeName(localName(class.Name))
 		// Generate a Go source file for the class.
-		filename := fmt.Sprintf("%s.go", strings.ToLower(class.Name))
+		filename := fmt.Sprintf("%s.go", strings.ToLower(localClassName))
 		file, err := os.Create(filename)
 		if err != nil {
 			fmt.Println("Error creating file:", err)
