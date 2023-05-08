@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Launch Ingest",
+            "name": "Launch Generate",
             "type": "go",
             "request": "launch",
             "mode": "auto",
-            "program": "cmd/ingest"
+            "program": "cmd/generate.go"
         }
     ]
 }
