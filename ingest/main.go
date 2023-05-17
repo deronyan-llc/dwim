@@ -1,9 +1,9 @@
 package ingest
 
 import (
-	"fmt"
-	"github.com/knakk/rdf"
 	"strings"
+
+	"github.com/knakk/rdf"
 )
 
 type Class struct {

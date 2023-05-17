@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 	"regexp"
 	"strings"
@@ -15,6 +16,8 @@ import (
 type SchemaClass struct {
 	Name       string
 	Properties []SchemaProperty
+	TargetDir  string
+	Package    string
 }
 
 type SchemaProperty struct {
@@ -111,7 +114,7 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		localClassName := sanitizeName(localName(class.Name))
 		// Generate a Go source file for the class.
 		filename := fmt.Sprintf("%s.go", strings.ToLower(localClassName))
-		file, err := os.Create(filename)
+		file, err := os.Create("gen/" + filename)
 		if err != nil {
 			fmt.Println("Error creating file:", err)
 			continue
@@ -127,13 +130,20 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 }
 
 func main() {
-	// Parse the RDF schema file.
-	classes, err := parseRDFSchema("../schemas/ethereum/ethereum-core.ttl")
+	// Parse the RDF schema files
+	files, err := ioutil.ReadDir("schemas/ethereum")
 	if err != nil {
-		fmt.Println("Error parsing RDF schema:", err)
-		os.Exit(1)
+		log.Fatal(err)
 	}
 
-	// Generate the GoLang code.
-	generateGoCode(classes)
+	for _, file := range files {
+		classes, err := parseRDFSchema("./schemas/ethereum/" + file.Name())
+		if err != nil {
+			fmt.Println("Error parsing RDF schema:", err)
+			os.Exit(1)
+		}
+
+		// Generate the GoLang code.
+		generateGoCode(classes)
+	}
 }
