@@ -1,0 +1,71 @@
+@prefix rml: <http://semweb.mmlab.be/ns/rml#> .
+@prefix ql: <http://semweb.mmlab.be/ns/ql#> .
+@prefix rr: <http://www.w3.org/ns/r2rml#> .
+@prefix ex: <http://example.org/ontology#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+# The RML mapping for the Ethereum blockchain.
+# The mapping is based on the JSON-RPC API of the Parity client.
+<#BlockMapping>
+  rml:logicalSource [
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.result"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.org/block/{hash}";
+    rr:class ex:Block
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:transaction;
+    rr:objectMap [ rr:parentTriplesMap <#TransactionMapping> ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:difficulty;
+    rr:objectMap [ rml:reference "difficulty" ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:gasLimit;
+    rr:objectMap [ rml:reference "gasLimit" ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:gasUsed;
+    rr:objectMap [ rml:reference "gasUsed" ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:hash;
+    rr:objectMap [ rml:reference "hash" ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:miner;
+    rr:objectMap [ rml:reference "miner" ]
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:nonce;
+    rr:objectMap [ rml:reference "nonce" ]
+  ];
+.
+
+<#TransactionMapping>
+  rml:logicalSource [
+    rml:referenceFormulation ql:JSONPath;
+    rml:iterator "$.result.transactions[*]"
+  ];
+
+  rr:subjectMap [
+    rr:template "http://example.org/transaction/{blockHash}";
+    rr:class ex:Transaction
+  ];
+
+  rr:predicateObjectMap [
+    rr:predicate ex:blockHash;
+    rr:objectMap [ rml:reference "blockHash" ]
+  ];
+.

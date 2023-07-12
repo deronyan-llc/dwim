@@ -8,13 +8,63 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix eth: <http://example.org/ethereum/> .
 
+# Classes
 eth:Block a rdfs:Class ;
     rdfs:label "Block" ;
-    rdfs:comment "An Ethereum block in the blockchain" .
+    rdfs:comment "An Ethereum block in the blockchain" ;
+    .
 
 eth:Address a rdfs:Class ;
     rdfs:label "Address" ;
-    rdfs:comment "An Ethereum address" .
+    rdfs:comment "An Ethereum address" ;
+    rdfs:subClassOf xsd:string ;
+    .
+
+eth:Gwei a rdfs:Class ;
+    rdfs:label "Gwei" ;
+    rdfs:comment "A unit of ether" ;
+    rdfs:subClassOf xsd:string ;
+    .
+
+# Properties
+eth:miner a rdfs:Property ;
+    rdf:value "0x690b9a9e9aa1c9db991c7721a92d351db4fac990";
+    rdfs:label "miner" ;
+    rdfs:comment "The address of the miner who mined the block" .
+    rdfs:domain eth:Block ;
+    rdfs:range eth:Address ;
+    rdfs:subPropertyOf eth:address ;
+    .
+
+eth:mixHash a rdfs:Property ;
+    rdf:value "0x25b2bbc71566e05c2527f74b66ecfe0dbbf2e8d15c8f815b86158e67862fb9bb";
+    rdfs:label "mixHash" ;
+    rdfs:comment "The hash of the combined Proof-of-Work and Proof-of-Stake algorithms" .
+    rdfs:domain eth:Block ;
+    rdfs:range xsd:string ;
+    rdfs:subPropertyOf eth:hash ;
+    .
+
+eth:parentHash a rdfs:Property ;
+    rdf:value "0x7f8a1a6923a832efe70451c97304f2f7cff5cd36969af6669355addb9ad5bea9";
+    rdfs:label "parentHash" ;
+    .
+
+eth:size a rdfs:Property ;
+    rdf:value "0x1b4eb";
+    rdfs:label "size" ;
+    .
+
+eth:totalDifficulty a rdfs:Property ;
+    rdf:value "0x0";
+    rdfs:label "totalDifficulty" ;
+    .
+
+eth:baseFeePerGas a rdfs:Property ;
+    rdfs:label "baseFeePerGas" ;
+    rdfs:domain eth:Block ;
+    rdfs:range eth:Gwei ;
+    rdfs:comment "The base fee per gas for the block" .
 
 eth:number a rdfs:Property ;
     rdfs:label "number" ;
