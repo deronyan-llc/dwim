@@ -71,9 +71,3 @@ func generateGoSource(classes []Class) string {
 
 	return sourceBuilder.String()
 }
-
-// Implement the RDF schema parsing logic here.
-// This function should return a list of Class instances based on the RDF schema.
-func parseRDFSchema(schema string) ([]Class, error) {
-	return []Class{}, nil
-}

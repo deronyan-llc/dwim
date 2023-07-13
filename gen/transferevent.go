@@ -1,6 +1,6 @@
 package main
 
 type TransferEvent struct {
-	From String `json:"from"`
-	To String `json:"to"`
+	From string `json:"from"`
+	To   string `json:"to"`
 }

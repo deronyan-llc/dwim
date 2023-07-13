@@ -3,7 +3,6 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix eg: <http://www.example.org/> .
 @prefix egdt: <http://example.org/simpleTypes#> .
-@prefix xsd: <http://www.example.org/> .
 @prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix eth: <http://example.org/ethereum/> .
@@ -30,7 +29,7 @@ eth:Gwei a rdfs:Class ;
 eth:miner a rdfs:Property ;
     rdf:value "0x690b9a9e9aa1c9db991c7721a92d351db4fac990";
     rdfs:label "miner" ;
-    rdfs:comment "The address of the miner who mined the block" .
+    rdfs:comment "The address of the miner who mined the block" ;
     rdfs:domain eth:Block ;
     rdfs:range eth:Address ;
     rdfs:subPropertyOf eth:address ;
@@ -39,7 +38,7 @@ eth:miner a rdfs:Property ;
 eth:mixHash a rdfs:Property ;
     rdf:value "0x25b2bbc71566e05c2527f74b66ecfe0dbbf2e8d15c8f815b86158e67862fb9bb";
     rdfs:label "mixHash" ;
-    rdfs:comment "The hash of the combined Proof-of-Work and Proof-of-Stake algorithms" .
+    rdfs:comment "The hash of the combined Proof-of-Work and Proof-of-Stake algorithms" ;
     rdfs:domain eth:Block ;
     rdfs:range xsd:string ;
     rdfs:subPropertyOf eth:hash ;
