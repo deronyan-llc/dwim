@@ -1,12 +1,20 @@
+#!/bin/bash
+
 # get ethereum blocks
 #set -x
 ROOT=/mnt/data/columbo-data/blocks/ethereum/mainnet
+ROOT=./
 count=0
 dup=0
 ok=0
 fail=0
 total=0
-for n in `seq 16670680 16700000`; do
+first=17773300
+last=17773319
+n=$first
+while [ $n -lt $last ]
+do
+    #for n in `seq 16670680 16700000`; do
     h=`printf "%x" $n`;
     FILE=$ROOT/block$n.json
     #if [ -f "$FILE" ]; then
@@ -38,4 +46,5 @@ for n in `seq 16670680 16700000`; do
 	    echo "  $dup Dup, $ok Ok, $fail Fail, $total Total"
 	    count=0
     fi
+    n=$((n+1))
 done
