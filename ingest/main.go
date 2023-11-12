@@ -19,7 +19,7 @@ type Property struct {
 func parseRDFSchema(schema string) ([]Class, error) {
 	var classes []Class
 
-	g := rdf.NewGraph()
+	g := rdf.{}
 	err := g.Parse(schema, rdf.Turtle)
 	if err != nil {
 		return classes, err
@@ -36,6 +36,7 @@ func parseRDFSchema(schema string) ([]Class, error) {
 	}
 
 	return classes, nil
+
 }
 
 func goStruct(class Class) string {
