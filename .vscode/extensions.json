@@ -1,5 +1,6 @@
 {
     "recommendations": [
-        "fluree.fluree"
+        "fluree.fluree",
+        "github.copilot-chat"
     ]
 }

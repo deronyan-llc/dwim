@@ -29,7 +29,7 @@ type SchemaProperty struct {
 // parseRDFSchema reads the Turtle RDF schema and returns a map of SchemaClass.
 func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 	// Read the Turtle RDF schema file.
-	data, err := ioutil.ReadFile(file)
+	data, err := os.ReadFile(file)
 	if err != nil {
 		return nil, err
 	}
