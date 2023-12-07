@@ -5,11 +5,11 @@
     "version": "0.2.0",
     "configurations": [    
         {
-            "name": "Launch Generate",
+            "name": "Launch Schema Gen",
             "type": "go",
             "request": "launch",
             "mode": "debug",
-            "program": "ingest/main.go",
+            "program": "cmd/schema_gen/main.go",
         },
         {
             "name": "Kraken API",

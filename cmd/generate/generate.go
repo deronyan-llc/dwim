@@ -1,8 +1,8 @@
-package cmd
+package main
 
 import (
+	"bufio"
 	"fmt"
-	"io/ioutil"
 	"os"
 	"path/filepath"
 	"strings"
@@ -11,13 +11,16 @@ import (
 )
 
 func main() {
-	// Read RDF model file
+	// Read RDF model file from args
 	modelPath := os.Args[1]
-	model, err := rdf2go.ReadFile(modelPath)
+	filePath, err := os.Open(modelPath)
 	if err != nil {
 		fmt.Println("Error reading RDF model:", err)
 		os.Exit(1)
 	}
+	model := rdf2go.NewGraph("")
+	bufio.NewReader(filePath)
+	err := model.Parse(modelFile, "text/turtle")
 
 	// Identify classes
 	classes := map[string]*rdf2go.Resource{}
@@ -58,7 +61,7 @@ func generateGolangFile(outputFile, className string, resource *rdf2go.Resource,
 	content += "}\n"
 
 	// Write content to file
-	err := ioutil.WriteFile(outputFile, []byte(content), 0644)
+	err := os.WriteFile(outputFile, []byte(content), 0644)
 	if err != nil {
 		return err
 	}

@@ -9,4 +9,5 @@ require (
 	github.com/deiu/rdf2go v0.0.0-20230522072227-c39eb296d51c // indirect
 	github.com/linkeddata/gojsonld v0.0.0-20170418210642-4f5db6791326 // indirect
 	github.com/rychipman/easylex v0.0.0-20160129204217-49ee7767142f // indirect
+	golang.org/x/text v0.14.0 // indirect
 )

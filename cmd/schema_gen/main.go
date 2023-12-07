@@ -1,9 +1,8 @@
-package cmd
+package main
 
 import (
 	"bytes"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"os"
 	"regexp"
@@ -21,9 +20,10 @@ type SchemaClass struct {
 }
 
 type SchemaProperty struct {
-	Name   string
-	Domain string
-	Range  string
+	Name     string
+	Domain   string
+	Range    string
+	LangType string
 }
 
 // parseRDFSchema reads the Turtle RDF schema and returns a map of SchemaClass.
@@ -54,8 +54,9 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 		case "http://www.w3.org/2000/01/rdf-schema#domain":
 			if class, ok := classes[triple.Obj.String()]; ok {
 				property := SchemaProperty{
-					Name:   triple.Subj.String(),
-					Domain: triple.Obj.String(),
+					Name:     triple.Subj.String(),
+					Domain:   triple.Obj.String(),
+					LangType: "NoRange",
 				}
 				class.Properties = append(class.Properties, property)
 				classes[triple.Obj.String()] = class
@@ -66,7 +67,15 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 					if property.Name == triple.Subj.String() {
 						class.Properties[i].Range = triple.Obj.String()
 						classes[triple.Obj.String()] = class
-						break
+						class.Properties[i].LangType = triple.Obj.String()
+
+						// assign the lang-specific data type for the Range
+						switch triple.Obj.String() {
+						case "http://www.w3.org/2001/XMLSchema#string":
+						case "string":
+						case "xsd:string":
+							class.Properties[i].LangType = "string"
+						}
 					}
 				}
 			}
@@ -95,7 +104,7 @@ func generateGoCode(classes map[string]SchemaClass) {
 
 type {{ .Name | localName | sanitizeName | title }} struct {
 {{- range .Properties }}
-	{{ .Name | localName | sanitizeName | title }} {{ .Range | localName | sanitizeName | title}} ` + "`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" + `
+	{{ .Name | localName | sanitizeName | title }} {{ .LangType }} ` + "`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" + `
 {{- end }}
 }
 `
@@ -131,13 +140,14 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 
 func main() {
 	// Parse the RDF schema files
-	files, err := ioutil.ReadDir("schemas/ethereum")
+	// read all schema files in the schemas directory
+	files, err := os.ReadDir("../../schemas/columbo/")
 	if err != nil {
 		log.Fatal(err)
+		os.Exit(1)
 	}
-
 	for _, file := range files {
-		classes, err := parseRDFSchema("./schemas/ethereum/" + file.Name())
+		classes, err := parseRDFSchema("./schemas/columbo/" + file.Name())
 		if err != nil {
 			fmt.Println("Error parsing RDF schema:", err)
 			os.Exit(1)

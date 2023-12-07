@@ -1,4 +1,4 @@
-package ingest
+package main
 
 import (
 	"strings"
@@ -16,7 +16,7 @@ type Property struct {
 	Type string
 }
 
-func main(args []string) error {
+func main() {
 	schema := `
 	@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
@@ -87,8 +87,7 @@ erc721:to
     rdfs:domain erc721:TransferEvent ;
     rdfs:range xsd:string .
 `
-	_, err := parseRDFSchema(schema)
-	return err
+	parseRDFSchema(schema)
 }
 func parseRDFSchema(schema string) ([]Class, error) {
 	var classes []Class
