@@ -44,6 +44,7 @@ def public_get_with_pair(arg, pair):
         raise requests.ApiError('StatusCode: {}'.format(resp.status_code))
     else:
         return resp
+
 def private_post(arg, data):
     resp = kraken_request("/0/private/"+arg, data)
     if resp.status_code != 200:
@@ -54,29 +55,54 @@ def private_post(arg, data):
 def get_asset_pairs(pairs):
     return public_get("AssetPairs?pair="+pairs)
 
-def add_market_order(pair, volume):
+def add_market_order(pair, type, qty):
     return private_post(
         'AddOrder', 
         dict (
             make_nonce(),
             **{
                 "ordertype": "market",
-                "type": "buy",
-                "volume": volume,
+                "type": type,
+                "volume": qty,
                 "pair": pair
             }
         )
     )
 
+def list_open_orders():
+    return private_post('OpenOrders', make_nonce())
+
+def list_closed_orders():
+    return private_post('ClosedOrders', make_nonce())
+
+def query_orders(orders):
+    return private_post(
+        'QueryOrders', 
+        dict (
+            make_nonce(),
+            **{
+                "txid": orders,
+                "trades": "true"
+            }
+        )
+    )
+
+def pp(dictionary):
+    print(json.dumps(dictionary.json(), indent=4))
+
 def __main__():
-    # Construct the request and print the result
     print("Kraken trade api")
-    #print(public_get_with_pair("Depth", "XRPUSD").json())
-    #print(public_get("Time").json())
-    #print(public_get_with_pair("Ticker", "XBTUSD").json())
-    print(private_post('Balance', make_nonce()).json())
-    #print(add_market_order("XRPUSD", 10).json())
-    #print(get_asset_pairs("SOLOUSD").json())
-    # get key from env
+    #pp(public_get_with_pair("Depth", "XRPUSD"))
+    #pp(public_get("Time"))
+    #pp(public_get_with_pair("Ticker", "XBTUSD"))
+    #pp(private_post('Balance', make_nonce()))
+    #pp(add_market_order("XRPUSD", "buy", 10))
+    #pp(get_asset_pairs("SOLOUSD"))
+    #pp(add_market_order("XRPUSD", "sell", 10))
+    #pp(list_open_orders())
+    #pp(list_closed_orders())
+    pp(query_orders("OWRSNA-LSZ7T-NIVGN5"))
+    # pretty print dictionary
+    #pp(query_orders("OWRSNA-LSZ7T-NIVGN5"))
 
 __main__()
