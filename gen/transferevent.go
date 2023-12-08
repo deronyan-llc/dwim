@@ -1,6 +1,6 @@
 package main
 
 type TransferEvent struct {
-	From Unknown `json:"from"`
-	To Unknown `json:"to"`
+	From string `json:"from"`
+	To string `json:"to"`
 }

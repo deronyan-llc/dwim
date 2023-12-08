@@ -37,7 +37,8 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 	reader := bytes.NewReader(data)
 
 	// Parse the Turtle RDF schema.
-	triples, err := rdf.NewTripleDecoder(reader, rdf.Turtle).DecodeAll()
+	decoder := rdf.NewTripleDecoder(reader, rdf.Turtle)
+	triples, err := decoder.DecodeAll()
 	if err != nil {
 		return nil, err
 	}
@@ -66,15 +67,17 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 				for i, property := range class.Properties {
 					if property.Name == triple.Subj.String() {
 						class.Properties[i].Range = triple.Obj.String()
-						classes[triple.Obj.String()] = class
 						class.Properties[i].LangType = triple.Obj.String()
+						classes[triple.Obj.String()] = class
 
 						// assign the lang-specific data type for the Range
 						switch triple.Obj.String() {
-						case "http://www.w3.org/2001/XMLSchema#string":
-						case "string":
-						case "xsd:string":
+						case "http://www.w3.org/2001/XMLSchema#integer":
+							class.Properties[i].LangType = "int"
+						case "http://www.w3.org/2001/XMLSchema#string", "string", "xsd:string":
 							class.Properties[i].LangType = "string"
+						case "http://www.w3.org/2001/XMLSchema#dateTime":
+							class.Properties[i].LangType = "time.Time"
 						}
 					}
 				}
@@ -123,7 +126,7 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		localClassName := sanitizeName(localName(class.Name))
 		// Generate a Go source file for the class.
 		filename := fmt.Sprintf("%s.go", strings.ToLower(localClassName))
-		file, err := os.Create("gen/" + filename)
+		file, err := os.Create("../../gen/" + filename)
 		if err != nil {
 			fmt.Println("Error creating file:", err)
 			continue
@@ -141,15 +144,16 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 func main() {
 	// Parse the RDF schema files
 	// read all schema files in the schemas directory
-	files, err := os.ReadDir("../../schemas/columbo/")
+	dir := os.Args[1]
+	files, err := os.ReadDir(dir)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
 	}
 	for _, file := range files {
-		classes, err := parseRDFSchema("./schemas/columbo/" + file.Name())
+		classes, err := parseRDFSchema(dir + file.Name())
 		if err != nil {
-			fmt.Println("Error parsing RDF schema:", err)
+			fmt.Printf("Error parsing RDF schema for file(%s): %v\n", file.Name(), err)
 			os.Exit(1)
 		}
 

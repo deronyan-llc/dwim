@@ -20,3 +20,6 @@ tmp*.json
 
 # Backups
 *~
+
+# Misc
+cmd/schema_gen/__debug_bin*
