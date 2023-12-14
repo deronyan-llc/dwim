@@ -1,9 +1,14 @@
 package main
 
+import (
+	"time"
+
+)
+
 type Block struct {
-	Miner http://example.org/ethereum/Address `json:"miner"`
+	Miner Address `json:"miner"`
 	MixHash string `json:"mixhash"`
-	BaseFeePerGas http://example.org/ethereum/Gwei `json:"basefeepergas"`
+	BaseFeePerGas Gwei `json:"basefeepergas"`
 	Number int `json:"number"`
 	Hash string `json:"hash"`
 	ParentHash string `json:"parenthash"`
@@ -17,4 +22,5 @@ type Block struct {
 	GasLimit int `json:"gaslimit"`
 	Difficulty int `json:"difficulty"`
 	Timestamp time.Time `json:"timestamp"`
+	ExtraData string `json:"extradata"`
 }

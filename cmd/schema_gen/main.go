@@ -6,6 +6,7 @@ import (
 	"log"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 	"text/template"
 
@@ -17,6 +18,7 @@ type SchemaClass struct {
 	Properties []SchemaProperty
 	TargetDir  string
 	Package    string
+	Imports    []string
 }
 
 type SchemaProperty struct {
@@ -27,7 +29,7 @@ type SchemaProperty struct {
 }
 
 // parseRDFSchema reads the Turtle RDF schema and returns a map of SchemaClass.
-func parseRDFSchema(file string) (map[string]SchemaClass, error) {
+func parseRDFSchema(file string) (map[string]*SchemaClass, error) {
 	// Read the Turtle RDF schema file.
 	data, err := os.ReadFile(file)
 	if err != nil {
@@ -44,13 +46,13 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 	}
 
 	// Convert the triples to an intermediate representation.
-	classes := make(map[string]SchemaClass)
+	classes := make(map[string]*SchemaClass)
 	for _, triple := range triples {
 		// Check if the triple describes a class or a property.
 		switch triple.Pred.String() {
 		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
 			if triple.Obj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {
-				classes[triple.Subj.String()] = SchemaClass{Name: triple.Subj.String()}
+				classes[triple.Subj.String()] = &SchemaClass{Name: triple.Subj.String()}
 			}
 		case "http://www.w3.org/2000/01/rdf-schema#domain":
 			if class, ok := classes[triple.Obj.String()]; ok {
@@ -60,7 +62,6 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 					LangType: "NoRange",
 				}
 				class.Properties = append(class.Properties, property)
-				classes[triple.Obj.String()] = class
 			}
 		case "http://www.w3.org/2000/01/rdf-schema#range":
 			for _, class := range classes {
@@ -68,7 +69,7 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 					if property.Name == triple.Subj.String() {
 						class.Properties[i].Range = triple.Obj.String()
 						class.Properties[i].LangType = triple.Obj.String()
-						classes[triple.Obj.String()] = class
+						//classes[triple.Obj.String()] = class
 
 						// assign the lang-specific data type for the Range
 						switch triple.Obj.String() {
@@ -78,6 +79,11 @@ func parseRDFSchema(file string) (map[string]SchemaClass, error) {
 							class.Properties[i].LangType = "string"
 						case "http://www.w3.org/2001/XMLSchema#dateTime":
 							class.Properties[i].LangType = "time.Time"
+							if !slices.Contains(class.Imports, "time") {
+								class.Imports = append(class.Imports, "time")
+							}
+						default:
+							class.Properties[i].LangType = localName(triple.Obj.String())
 						}
 					}
 				}
@@ -101,25 +107,46 @@ func sanitizeName(name string) string {
 	return reg.ReplaceAllString(name, "")
 }
 
+func formatImports(imports []string) string {
+	var result string
+	for _, imp := range imports {
+		result += fmt.Sprintf("\t\"%s\"\n", imp)
+	}
+	return result
+}
+
 // generateGoCode generates GoLang code based on the given SchemaClass map.
-func generateGoCode(classes map[string]SchemaClass) {
+func generateGoCode(classes map[string]*SchemaClass) error {
 	const tmpl = `package main
+{{- if .Imports }}
+
+import (
+{{ .Imports | imports }}
+)
+{{- end }}
 
 type {{ .Name | localName | sanitizeName | title }} struct {
+{{- if .Properties }}
 {{- range .Properties }}
-	{{ .Name | localName | sanitizeName | title }} {{ .LangType }} ` + "`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" + `
+	{{ .Name | localName | sanitizeName | title }} {{ .LangType }} ` +
+		"`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" + `
+{{- end }}
 {{- end }}
 }
 `
-
 	funcMap := template.FuncMap{
 		"title":        strings.Title,
 		"lower":        strings.ToLower,
 		"localName":    localName,
 		"sanitizeName": sanitizeName,
+		"imports":      formatImports,
 	}
 
-	t := template.Must(template.New("class").Funcs(funcMap).Parse(tmpl))
+	t, err := template.New("class").Funcs(funcMap).Parse(tmpl)
+	if err != nil {
+		fmt.Println("Error parsing template:", err)
+		return err
+	}
 
 	// Generate GoLang code for each class in the map.
 	for _, class := range classes {
@@ -137,8 +164,11 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		err = t.Execute(file, class)
 		if err != nil {
 			fmt.Println("Error executing template:", err)
+			continue
 		}
 	}
+
+	return nil
 }
 
 func main() {
@@ -151,6 +181,7 @@ func main() {
 		os.Exit(1)
 	}
 	for _, file := range files {
+		fmt.Printf("Parsing RDF schema for file(%s)\n", file.Name())
 		classes, err := parseRDFSchema(dir + file.Name())
 		if err != nil {
 			fmt.Printf("Error parsing RDF schema for file(%s): %v\n", file.Name(), err)
@@ -158,6 +189,9 @@ func main() {
 		}
 
 		// Generate the GoLang code.
-		generateGoCode(classes)
+		if err := generateGoCode(classes); err != nil {
+			fmt.Printf("Error generating GoLang code for file(%s): %v\n", file.Name(), err)
+			os.Exit(1)
+		}
 	}
 }

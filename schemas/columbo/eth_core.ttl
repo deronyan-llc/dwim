@@ -149,7 +149,6 @@ eth:extraData a rdfs:Property ;
     rdfs:range xsd:string ;
     rdfs:comment "A variable-length field that can store arbitrary data provided by the miner" .
 
-
 eth:address a rdfs:Property ;
     rdfs:label "address" ;
     rdfs:domain eth:Address ;
