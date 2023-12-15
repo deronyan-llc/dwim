@@ -4,6 +4,10 @@ import (
 	"time"
 )
 
+// Gwei is a generated struct representing the http://example.org/ethereum/Gwei class.
+type Gwei struct {
+}
+
 // Block is a generated struct representing the http://example.org/ethereum/Block class.
 type Block struct {
 	Miner            Address   `json:"miner"`
@@ -28,8 +32,4 @@ type Block struct {
 // Address is a generated struct representing the http://example.org/ethereum/Address class.
 type Address struct {
 	Address string `json:"address"`
-}
-
-// Gwei is a generated struct representing the http://example.org/ethereum/Gwei class.
-type Gwei struct {
 }
