@@ -2,6 +2,7 @@ package src_generators
 
 import (
 	"fmt"
+	"go/format"
 	"os"
 	"slices"
 	"strings"
@@ -15,7 +16,8 @@ type GoSrcGenerator struct {
 
 // generateGoCode generates GoLang code based on the given SchemaClass map.
 func (g GoSrcGenerator) Generate(schemaContext *common.SchemaContext) error {
-	const tmpl = `package main
+	const tmpl = `package generated
+	
 {{- if .Imports }}
 
 import (
@@ -27,6 +29,8 @@ import (
 
 {{- if .Classes }}
 	{{- range .Classes }}
+
+// {{ .Name | localName | sanitizeName | title }} is a generated struct representing the {{ .Name }} class.
 type {{ .Name | localName | sanitizeName | title }} struct {
 		{{- if .Properties }}
 			{{- range .Properties }}
@@ -54,13 +58,10 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 	}
 
 	// Generate a Go source file for the classes.
-	generatedGoSrcName := fmt.Sprintf("%s.go", strings.ToLower(schemaContext.StrippedPath))
-	file, err := os.Create("../../gen/schemas/" + generatedGoSrcName)
-	if err != nil {
-		fmt.Println("Error creating file:", err)
-		return err
-	}
-	defer file.Close()
+	goSrcFileName := fmt.Sprintf("%s/%s.go",
+		schemaContext.OutputPath,
+		schemaContext.SchemaPath.StrippedFileName,
+	)
 
 	// combine all the imports and types from all the classes together
 	type GoStructs struct {
@@ -80,9 +81,41 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		goStructs.Classes = append(goStructs.Classes, classes)
 	}
 
-	err = t.Execute(file, goStructs)
+	// execute the template
+	stringBuf := strings.Builder{}
+	err = t.Execute(&stringBuf, goStructs)
 	if err != nil {
 		fmt.Println("Error executing template:", err)
+		return err
+	}
+
+	// create the output directory if it doesn't exist
+	os.MkdirAll(schemaContext.OutputPath, os.ModePerm)
+	file, err := os.Create(goSrcFileName)
+	if err != nil {
+		fmt.Println("Error creating file:", err)
+		return err
+	}
+	defer file.Close()
+
+	// write the generated Go source to a file, unformatted initially
+	_, err = file.Write([]byte(stringBuf.String()))
+	if err != nil {
+		fmt.Println("Error writing to file:", err)
+		return err
+	}
+
+	// format the Go source code
+	formatted, err := format.Source([]byte(stringBuf.String()))
+	if err != nil {
+		fmt.Println("Error formatting source:", err)
+		return err
+	}
+
+	// write the formatted Go source to a file
+	_, err = file.WriteAt(formatted, 0)
+	if err != nil {
+		fmt.Println("Error writing to file:", err)
 		return err
 	}
 

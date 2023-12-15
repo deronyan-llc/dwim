@@ -10,7 +10,7 @@
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/schema_gen/main.go",
-            "args": [ "../../schemas/columbo/" ]
+            "args": [ "../../schemas/columbo/", "../../gen/schemas/columbo/" ]
         },
         {
             "name": "Kraken API",

@@ -2,7 +2,6 @@ package parsers
 
 import (
 	"bytes"
-	"fmt"
 	"os"
 	"slices"
 
@@ -14,10 +13,13 @@ type RDFParser struct {
 }
 
 func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
-	// figure out what format of RDF file this is
-	rdfFormat, _, _ := FileExtToRdfFormat(file)
-	if rdfFormat == rdf.Format(-1) {
-		return nil, fmt.Errorf("unknown RDF file format for file(%s)", file)
+	schemaPath, err := common.ParseSchemaPath(file)
+	if err != nil {
+		return nil, err
+	}
+	schemaContext := &common.SchemaContext{
+		SchemaPath: *schemaPath,
+		Classes:    make(map[string]*common.SchemaClass),
 	}
 
 	// Read the RDF schema file.
@@ -28,21 +30,15 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 	reader := bytes.NewReader(data)
 
 	// Parse the RDF schema.
-	decoder := rdf.NewTripleDecoder(reader, rdfFormat)
+	decoder := rdf.NewTripleDecoder(reader, schemaContext.SchemaPath.RdfFormat)
 	triples, err := decoder.DecodeAll()
 	if err != nil {
 		return nil, err
 	}
 
-	rdfFormat, strippedFile, extension := FileExtToRdfFormat(file)
-	schemaContext := &common.SchemaContext{
-		Path:         file,
-		StrippedPath: strippedFile,
-		Format:       rdfFormat,
-		Extension:    extension,
-		Classes:      make(map[string]*common.SchemaClass),
-	}
-
+	/*
+	 * TODO - make this better
+	 */
 	for _, triple := range triples {
 		// Check if the triple describes a class or a property.
 		switch triple.Pred.String() {
@@ -67,18 +63,26 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 						class.Properties[i].LangType = triple.Obj.String()
 						//classes[triple.Obj.String()] = class
 
+						/*
+						 * TODO - make this better, more abstract using a map of RDF types to Go types.
+						 * Likely, some interface parent is needed for all the types.
+						 */
+
 						// assign the lang-specific data type for the Range
-						switch triple.Obj.String() {
-						case "http://www.w3.org/2001/XMLSchema#integer":
+						objStr := triple.Obj.String()
+						switch objStr {
+						case common.XsdInteger.Str, common.XsdInt.Str: // "http://www.w3.org/2001/XMLSchema#integer":
 							class.Properties[i].LangType = "int"
-						case "http://www.w3.org/2001/XMLSchema#string", "string", "xsd:string":
+						case common.XsdString.Str: // "http://www.w3.org/2001/XMLSchema#string":
 							class.Properties[i].LangType = "string"
-						case "http://www.w3.org/2001/XMLSchema#dateTime":
+						case common.XsdDateTime.Str: // "http://www.w3.org/2001/XMLSchema#dateTime":
 							class.Properties[i].LangType = "time.Time"
 							if !slices.Contains(class.Imports, "time") {
 								class.Imports = append(class.Imports, "time")
 							}
 						default:
+							// figure out how to resolve unknown types from other schemas
+							// TODO: `Agent`, `anyURI`
 							class.Properties[i].LangType = common.LocalName(triple.Obj.String())
 						}
 					}

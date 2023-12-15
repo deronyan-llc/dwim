@@ -12,8 +12,9 @@ import (
 func main() {
 	// Parse the RDF schema files
 	// read all schema files in the schemas directory
-	dir := os.Args[1]
-	files, err := os.ReadDir(dir)
+	inputDir := os.Args[1]
+	outputDir := os.Args[2]
+	files, err := os.ReadDir(inputDir)
 	if err != nil {
 		log.Fatal(err)
 		os.Exit(1)
@@ -24,13 +25,13 @@ func main() {
 
 	for _, file := range files {
 		fmt.Printf("Parsing RDF schema for file(%s)\n", file.Name())
-		context, err := parser.Parse(dir + file.Name())
+		context, err := parser.Parse(inputDir + "/" + file.Name())
 		if err != nil {
 			fmt.Printf("Error parsing RDF schema for file(%s): %v\n", file.Name(), err)
 			continue
 		}
 
-		// Generate the GoLang code.
+		context.OutputPath = outputDir
 		if err := goSrcGenerator.Generate(context); err != nil {
 			fmt.Printf("Error generating GoLang code for file(%s): %v\n", file.Name(), err)
 			continue
