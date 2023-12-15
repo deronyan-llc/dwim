@@ -5,7 +5,7 @@
     "version": "0.2.0",
     "configurations": [    
         {
-            "name": "Launch Schema Gen",
+            "name": "Schema Gen (Columbo)",
             "type": "go",
             "request": "launch",
             "mode": "debug",
