@@ -23,3 +23,7 @@ tmp*.json
 
 # Misc
 cmd/schema_gen/__debug_bin*
+
+# Downloaded / Generated Files
+blocks/
+gen/
