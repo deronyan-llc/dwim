@@ -11,7 +11,7 @@ import (
 
 type SchemaClass struct {
 	Name       string
-	Properties []SchemaProperty
+	Properties []*SchemaProperty
 	Package    string
 	Imports    []string
 }

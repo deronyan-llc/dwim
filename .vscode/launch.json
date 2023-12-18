@@ -13,6 +13,22 @@
             "args": [ "../../schemas/columbo/", "../../gen/schemas/columbo/" ]
         },
         {
+            "name": "Schema Gen (schema.org)",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/schema_gen/main.go",
+            "args": [ "../../schemas/third_party/schema_org", "../../gen/schemas/third_party/schema_org" ]
+        },
+        {
+            "name": "Schema Gen (test)",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "program": "${workspaceFolder}/cmd/schema_gen/main.go",
+            "args": [ "../../schemas/testing/", "../../gen/schemas/testing" ]
+        },
+        {
             "name": "Kraken API",
             "type": "python",
             "request": "launch",

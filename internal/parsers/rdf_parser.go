@@ -5,8 +5,8 @@ import (
 	"os"
 	"slices"
 
+	"deronyan-llc.com/rdf"
 	"deronyan.com/columbo/internal/common"
-	"github.com/knakk/rdf"
 )
 
 type RDFParser struct {
@@ -48,7 +48,7 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 			}
 		case "http://www.w3.org/2000/01/rdf-schema#domain":
 			if class, ok := schemaContext.Classes[triple.Obj.String()]; ok {
-				property := common.SchemaProperty{
+				property := &common.SchemaProperty{
 					Name:     triple.Subj.String(),
 					Domain:   triple.Obj.String(),
 					LangType: "NoRange",
@@ -84,6 +84,7 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 							// figure out how to resolve unknown types from other schemas
 							// TODO: `Agent`, `anyURI`
 							class.Properties[i].LangType = common.LocalName(triple.Obj.String())
+							//class.Properties[i] = nil
 						}
 					}
 				}
