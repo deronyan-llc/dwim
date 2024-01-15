@@ -1,6 +1,6 @@
 package src_generators
 
-import "deronyan.com/columbo/internal/common"
+import "github.com/deronyan-llc/columbo/internal/common"
 
 type SrcGenerator interface {
 	Generate(schemaContext *common.SchemaContext) error

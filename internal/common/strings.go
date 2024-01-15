@@ -16,7 +16,11 @@ func LocalName(uri string) string {
 
 func SanitizeName(name string) string {
 	reg, _ := regexp.Compile("[^a-zA-Z0-9]+")
-	return reg.ReplaceAllString(name, "")
+	rtn := reg.ReplaceAllString(name, "")
+	if rtn[0] >= '0' && rtn[0] <= '9' {
+		rtn = "_" + rtn
+	}
+	return rtn
 }
 
 func FormatImports(imports []string) string {

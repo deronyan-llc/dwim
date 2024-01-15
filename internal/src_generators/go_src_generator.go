@@ -8,10 +8,16 @@ import (
 	"strings"
 	"text/template"
 
-	"deronyan.com/columbo/internal/common"
+	"github.com/deronyan-llc/columbo/internal/common"
 )
 
 type GoSrcGenerator struct {
+}
+
+// combine all the imports and types from all the classes together
+type GoStructs struct {
+	Imports []string
+	Classes []*common.SchemaClass
 }
 
 // generateGoCode generates GoLang code based on the given SchemaClass map.
@@ -35,7 +41,8 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		{{- if .Properties }}
 			{{- range .Properties }}
 	{{ .Name | localName | sanitizeName | title }} {{ .LangType }} ` +
-		"`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" + `
+		"`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" +
+		"{{ .Comment }}" + `
 			{{- end }}
 		{{- end }}
 }
@@ -63,11 +70,6 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		schemaContext.SchemaPath.StrippedFileName,
 	)
 
-	// combine all the imports and types from all the classes together
-	type GoStructs struct {
-		Imports []string
-		Classes []*common.SchemaClass
-	}
 	goStructs := GoStructs{
 		Imports: []string{},
 		Classes: []*common.SchemaClass{},

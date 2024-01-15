@@ -6,7 +6,7 @@ import (
 
 	"path/filepath"
 
-	"github.com/knakk/rdf"
+	"github.com/deronyan-llc/rdf/rdf"
 )
 
 type SchemaClass struct {
@@ -21,6 +21,7 @@ type SchemaProperty struct {
 	Domain   string
 	Range    string
 	LangType string
+	Comment  string
 }
 
 type SchemaPath struct {

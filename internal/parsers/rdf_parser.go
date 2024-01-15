@@ -5,8 +5,8 @@ import (
 	"os"
 	"slices"
 
-	"deronyan-llc.com/rdf"
-	"deronyan.com/columbo/internal/common"
+	"github.com/deronyan-llc/columbo/internal/common"
+	"github.com/deronyan-llc/rdf/rdf"
 )
 
 type RDFParser struct {
@@ -40,25 +40,32 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 	 * TODO - make this better
 	 */
 	for _, triple := range triples {
+		//fmt.Printf("%s %s %s\n", triple.Subj, triple.Pred, triple.Obj)
+
 		// Check if the triple describes a class or a property.
 		switch triple.Pred.String() {
 		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
 			if triple.Obj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {
 				schemaContext.Classes[triple.Subj.String()] = &common.SchemaClass{Name: triple.Subj.String()}
 			}
-		case "http://www.w3.org/2000/01/rdf-schema#domain":
+		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#about":
+			if triple.Subj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {
+				schemaContext.Classes[triple.Obj.String()] = &common.SchemaClass{Name: triple.Obj.String()}
+			}
+		case "http://www.w3.org/2000/01/rdf-schema#domain", "https://schema.org/domainIncludes":
 			if class, ok := schemaContext.Classes[triple.Obj.String()]; ok {
 				property := &common.SchemaProperty{
 					Name:     triple.Subj.String(),
 					Domain:   triple.Obj.String(),
-					LangType: "NoRange",
+					LangType: "string", // default type when no range is specified
 				}
 				class.Properties = append(class.Properties, property)
 			}
-		case "http://www.w3.org/2000/01/rdf-schema#range":
+		case "http://www.w3.org/2000/01/rdf-schema#range", "https://schema.org/rangeIncludes":
 			for _, class := range schemaContext.Classes {
 				for i, property := range class.Properties {
 					if property.Name == triple.Subj.String() {
+						class.Properties[i].Comment = "//" + triple.Obj.String()
 						class.Properties[i].Range = triple.Obj.String()
 						class.Properties[i].LangType = triple.Obj.String()
 						//classes[triple.Obj.String()] = class
@@ -81,9 +88,7 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 								class.Imports = append(class.Imports, "time")
 							}
 						default:
-							// figure out how to resolve unknown types from other schemas
-							// TODO: `Agent`, `anyURI`
-							class.Properties[i].LangType = common.LocalName(triple.Obj.String())
+							class.Properties[i].LangType = "*" + common.LocalName(triple.Obj.String())
 							//class.Properties[i] = nil
 						}
 					}

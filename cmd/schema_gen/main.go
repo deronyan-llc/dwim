@@ -5,8 +5,8 @@ import (
 	"log"
 	"os"
 
-	"deronyan.com/columbo/internal/parsers"
-	"deronyan.com/columbo/internal/src_generators"
+	"github.com/deronyan-llc/columbo/internal/parsers"
+	"github.com/deronyan-llc/columbo/internal/src_generators"
 )
 
 func main() {
