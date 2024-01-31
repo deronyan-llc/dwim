@@ -94,6 +94,13 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 					}
 				}
 			}
+		case "<http://www.w3.org/1999/02/22-rdf-syntax-ns#about":
+
+			// Capture OWL properties and classes!!!!!!
+
+			if triple.Subj.String() == "http://www.w3.org/2002/07/owl#Class" {
+				schemaContext.Classes[triple.Obj.String()] = &common.SchemaClass{Name: triple.Obj.String()}
+			}
 		}
 	}
 

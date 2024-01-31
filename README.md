@@ -33,3 +33,4 @@ Parsing RDF schema for file(eth_core.ttl)
 ```
 
 When done, the files in `gen/schemas/columbo` will be updated (if needed), to reflect the current state of the input path provided `schemas/columbo`
+

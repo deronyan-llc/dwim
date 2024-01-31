@@ -12,17 +12,19 @@ import (
 )
 
 type GoSrcGenerator struct {
+	SrcGenerator
 }
 
 // combine all the imports and types from all the classes together
 type GoStructs struct {
+	Package string
 	Imports []string
 	Classes []*common.SchemaClass
 }
 
 // generateGoCode generates GoLang code based on the given SchemaClass map.
 func (g GoSrcGenerator) Generate(schemaContext *common.SchemaContext) error {
-	const tmpl = `package generated
+	const tmpl = `package {{.Package}}
 	
 {{- if .Imports }}
 
@@ -64,13 +66,13 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		return err
 	}
 
-	// Generate a Go source file for the classes.
 	goSrcFileName := fmt.Sprintf("%s/%s.go",
 		schemaContext.OutputPath,
 		schemaContext.SchemaPath.StrippedFileName,
 	)
 
 	goStructs := GoStructs{
+		Package: schemaContext.SchemaPath.StrippedFileName,
 		Imports: []string{},
 		Classes: []*common.SchemaClass{},
 	}
@@ -82,6 +84,8 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		}
 		goStructs.Classes = append(goStructs.Classes, classes)
 	}
+
+	// Generate a Go source for the classes...
 
 	// execute the template
 	stringBuf := strings.Builder{}
@@ -100,21 +104,21 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 	}
 	defer file.Close()
 
-	// write the generated Go source to a file, unformatted initially
+	// write the generated Go source to a buffer, unformatted initially
 	_, err = file.Write([]byte(stringBuf.String()))
 	if err != nil {
 		fmt.Println("Error writing to file:", err)
 		return err
 	}
 
-	// format the Go source code
+	// format the Go source code buffer
 	formatted, err := format.Source([]byte(stringBuf.String()))
 	if err != nil {
 		fmt.Println("Error formatting source:", err)
 		return err
 	}
 
-	// write the formatted Go source to a file
+	// write the formatted Go buffer to a file
 	_, err = file.WriteAt(formatted, 0)
 	if err != nil {
 		fmt.Println("Error writing to file:", err)
