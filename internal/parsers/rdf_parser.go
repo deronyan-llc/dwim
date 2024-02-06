@@ -17,9 +17,11 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 	if err != nil {
 		return nil, err
 	}
+	packageName := schemaPath.StrippedFileName
 	schemaContext := &common.SchemaContext{
-		SchemaPath: *schemaPath,
-		Classes:    make(map[string]*common.SchemaClass),
+		SchemaPath:  *schemaPath,
+		PackageName: packageName,
+		Classes:     make(map[string]*common.SchemaClass),
 	}
 
 	// Read the RDF schema file.
@@ -46,7 +48,10 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 		switch triple.Pred.String() {
 		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
 			if triple.Obj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {
-				schemaContext.Classes[triple.Subj.String()] = &common.SchemaClass{Name: triple.Subj.String()}
+				schemaContext.Classes[triple.Subj.String()] = &common.SchemaClass{
+					Name:    triple.Subj.String(),
+					Package: packageName,
+				}
 			}
 		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#about":
 			if triple.Subj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {

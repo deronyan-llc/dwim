@@ -1,0 +1,51 @@
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix vann: <http://purl.org/vocab/vann/> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix adms: <http://www.w3.org/ns/adms#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix void: <http://rdfs.org/ns/void#> .
+
+<http://dwim.xyz/schemas/2024/01/dataset#DatasetDescription>
+    a void:DatasetDescription ;
+    rdfs:comment "Datasets for DWIM" ;
+    rdfs:label "DWIM Datasets" ;
+    dcterms:created "2024-01-01"^^xsd:date ;
+    dcterms:modified "2024-01-01"^^xsd:date ;
+    dcterms:creator <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:contributor <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:license <http://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:source <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:subject <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:description "Datasets for DWIM" ;
+    dcterms:title "DWIM Datasets" ;
+    dcterms:language "en" ;
+.
+
+<http://dwim.xyz/schemas/2024/01/dataset#Dataset>
+    a void:Dataset ;
+    rdfs:comment "Dataset for DWIM" ;
+    rdfs:label "DWIM Dataset" ;
+    dcterms:created "2024-01-01"^^xsd:date ;
+    dcterms:modified "2024-01-01"^^xsd:date ;
+    dcterms:creator <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:contributor <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:license <http://creativecommons.org/licenses/by/4.0/> ;
+    dcterms:source <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:subject <http://dwim.xyz/schemas/2024/01/dataset#> ;
+    dcterms:description "Dataset for DWIM" ;
+    dcterms:title "DWIM Dataset" ;
+    dcterms:language "en" ;
+.
+
+<http://dwim.xyz/schemas/2024/01/dataset#inputPath>
+    a void:DatatypeProperty ;
+.
+
+<http://dwim.xyz/schemas/2024/01/dataset#outputPath>
+    a rdf:Property, owl:DatatypeProperty ;
+    a void:DatatypeProperty ;
+.

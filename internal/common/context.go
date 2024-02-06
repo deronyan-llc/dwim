@@ -34,9 +34,10 @@ type SchemaPath struct {
 }
 
 type SchemaContext struct {
-	SchemaPath SchemaPath
-	OutputPath string
-	Classes    map[string]*SchemaClass
+	SchemaPath  SchemaPath
+	OutputPath  string
+	PackageName string
+	Classes     map[string]*SchemaClass
 }
 
 var FileExtensionsToRdfFormats map[string]rdf.Format = map[string]rdf.Format{
