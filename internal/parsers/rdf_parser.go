@@ -6,6 +6,7 @@ import (
 	"slices"
 
 	"github.com/deronyan-llc/columbo/internal/common"
+	"github.com/deronyan-llc/columbo/internal/consts"
 	"github.com/deronyan-llc/rdf/rdf"
 )
 
@@ -21,7 +22,7 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 	schemaContext := &common.SchemaContext{
 		SchemaPath:  *schemaPath,
 		PackageName: packageName,
-		Classes:     make(map[string]*common.SchemaClass),
+		Classes:     make(map[rdf.Term]*common.SchemaClass),
 	}
 
 	// Read the RDF schema file.
@@ -45,34 +46,41 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 		//fmt.Printf("%s %s %s\n", triple.Subj, triple.Pred, triple.Obj)
 
 		// Check if the triple describes a class or a property.
-		switch triple.Pred.String() {
-		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#type":
-			if triple.Obj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {
-				schemaContext.Classes[triple.Subj.String()] = &common.SchemaClass{
-					Name:    triple.Subj.String(),
-					Package: packageName,
+		switch triple.Pred {
+		case consts.Rdf_type:
+			if triple.Obj == consts.Rdfs_Class || triple.Obj == consts.Void_DatasetDescription || triple.Obj == consts.Void_Dataset {
+				schemaContext.Classes[triple.Subj] = &common.SchemaClass{
+					Term:       triple.Subj,
+					TermString: triple.Subj.String(),
+					Package:    packageName,
 				}
 			}
-		case "http://www.w3.org/1999/02/22-rdf-syntax-ns#about":
-			if triple.Subj.String() == "http://www.w3.org/2000/01/rdf-schema#Class" {
-				schemaContext.Classes[triple.Obj.String()] = &common.SchemaClass{Name: triple.Obj.String()}
+		case consts.Rdf_about:
+			if triple.Subj == consts.Rdfs_Class || triple.Obj == consts.Void_DatasetDescription || triple.Obj == consts.Void_Dataset {
+				schemaContext.Classes[triple.Obj] = &common.SchemaClass{
+					Term:       triple.Obj,
+					TermString: triple.Obj.String(),
+					Package:    packageName,
+				}
 			}
-		case "http://www.w3.org/2000/01/rdf-schema#domain", "https://schema.org/domainIncludes":
-			if class, ok := schemaContext.Classes[triple.Obj.String()]; ok {
+		// checking both of these can be deprecated with a proper OWL reasoner
+		case consts.Rdfs_domain, consts.SchemaOrg_domainIncludes:
+			if class, ok := schemaContext.Classes[triple.Obj]; ok {
 				property := &common.SchemaProperty{
-					Name:     triple.Subj.String(),
-					Domain:   triple.Obj.String(),
-					LangType: "string", // default type when no range is specified
+					Term:       triple.Subj,
+					TermString: triple.Subj.String(),
+					Domain:     triple.Obj,
+					GoLangType: "string", // default type when no range is specified
 				}
 				class.Properties = append(class.Properties, property)
 			}
-		case "http://www.w3.org/2000/01/rdf-schema#range", "https://schema.org/rangeIncludes":
+		case consts.Rdfs_range, consts.SchemaOrg_rangeIncludes:
 			for _, class := range schemaContext.Classes {
 				for i, property := range class.Properties {
-					if property.Name == triple.Subj.String() {
+					if property.Term == triple.Subj {
 						class.Properties[i].Comment = "//" + triple.Obj.String()
-						class.Properties[i].Range = triple.Obj.String()
-						class.Properties[i].LangType = triple.Obj.String()
+						class.Properties[i].Range = triple.Obj
+						class.Properties[i].GoLangType = triple.Obj.String()
 						//classes[triple.Obj.String()] = class
 
 						/*
@@ -84,27 +92,30 @@ func (p RDFParser) Parse(file string) (*common.SchemaContext, error) {
 						objStr := triple.Obj.String()
 						switch objStr {
 						case common.XsdInteger.Str, common.XsdInt.Str: // "http://www.w3.org/2001/XMLSchema#integer":
-							class.Properties[i].LangType = "int"
+							class.Properties[i].GoLangType = "int"
 						case common.XsdString.Str: // "http://www.w3.org/2001/XMLSchema#string":
-							class.Properties[i].LangType = "string"
+							class.Properties[i].GoLangType = "string"
 						case common.XsdDateTime.Str: // "http://www.w3.org/2001/XMLSchema#dateTime":
-							class.Properties[i].LangType = "time.Time"
+							class.Properties[i].GoLangType = "time.Time"
 							if !slices.Contains(class.Imports, "time") {
 								class.Imports = append(class.Imports, "time")
 							}
 						default:
-							class.Properties[i].LangType = "*" + common.LocalName(triple.Obj.String())
+							class.Properties[i].GoLangType = "*" + common.LocalName(triple.Obj.String())
 							//class.Properties[i] = nil
 						}
 					}
 				}
 			}
-		case "<http://www.w3.org/1999/02/22-rdf-syntax-ns#about":
-
+		case consts.Rdf_about:
 			// Capture OWL properties and classes!!!!!!
-
-			if triple.Subj.String() == "http://www.w3.org/2002/07/owl#Class" {
-				schemaContext.Classes[triple.Obj.String()] = &common.SchemaClass{Name: triple.Obj.String()}
+			// Should be used via an OWL reasoner
+			if triple.Subj == consts.Owl_Class {
+				schemaContext.Classes[triple.Obj] = &common.SchemaClass{
+					Term:       triple.Obj,
+					TermString: triple.Obj.String(),
+					Package:    packageName,
+				}
 			}
 		}
 	}

@@ -10,18 +10,20 @@ import (
 )
 
 type SchemaClass struct {
-	Name       string
+	Term       rdf.Term
+	TermString string
 	Properties []*SchemaProperty
 	Package    string
 	Imports    []string
 }
 
 type SchemaProperty struct {
-	Name     string
-	Domain   string
-	Range    string
-	LangType string
-	Comment  string
+	Term       rdf.Term
+	TermString string
+	Domain     rdf.Term
+	Range      rdf.Term
+	GoLangType string
+	Comment    string
 }
 
 type SchemaPath struct {
@@ -37,7 +39,7 @@ type SchemaContext struct {
 	SchemaPath  SchemaPath
 	OutputPath  string
 	PackageName string
-	Classes     map[string]*SchemaClass
+	Classes     map[rdf.Term]*SchemaClass
 }
 
 var FileExtensionsToRdfFormats map[string]rdf.Format = map[string]rdf.Format{

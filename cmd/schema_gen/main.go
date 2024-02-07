@@ -5,8 +5,9 @@ import (
 	"log"
 	"os"
 
+	"github.com/deronyan-llc/columbo/internal/generators"
+	"github.com/deronyan-llc/columbo/internal/generators/golang"
 	"github.com/deronyan-llc/columbo/internal/parsers"
-	"github.com/deronyan-llc/columbo/internal/src_generators"
 )
 
 func main() {
@@ -21,7 +22,7 @@ func main() {
 	}
 
 	var parser parsers.Parser = parsers.RDFParser{}
-	var goSrcGenerator src_generators.SrcGenerator = src_generators.GoSrcGenerator{}
+	var goSrcGenerator generators.SrcGenerator = golang.GoSrcGenerator{}
 
 	for _, file := range files {
 		fmt.Printf("Parsing RDF schema for file(%s)\n", file.Name())

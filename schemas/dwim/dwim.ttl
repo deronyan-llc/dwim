@@ -9,7 +9,7 @@
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix void: <http://rdfs.org/ns/void#> .
 
-<http://dwim.xyz/schemas/2024/01/dataset#DatasetDescription>
+<http://dwim.xyz/schemas/2024/01/dwim#DatasetDescription>
     a void:DatasetDescription ;
     rdfs:comment "Datasets for DWIM" ;
     rdfs:label "DWIM Datasets" ;
@@ -25,7 +25,7 @@
     dcterms:language "en" ;
 .
 
-<http://dwim.xyz/schemas/2024/01/dataset#Dataset>
+<http://dwim.xyz/schemas/2024/01/dwim#Dataset>
     a void:Dataset ;
     rdfs:comment "Dataset for DWIM" ;
     rdfs:label "DWIM Dataset" ;
@@ -41,11 +41,11 @@
     dcterms:language "en" ;
 .
 
-<http://dwim.xyz/schemas/2024/01/dataset#inputPath>
+<http://dwim.xyz/schemas/2024/01/dwim#inputPath>
     a void:DatatypeProperty ;
 .
 
-<http://dwim.xyz/schemas/2024/01/dataset#outputPath>
+<http://dwim.xyz/schemas/2024/01/dwim#outputPath>
     a rdf:Property, owl:DatatypeProperty ;
     a void:DatatypeProperty ;
 .

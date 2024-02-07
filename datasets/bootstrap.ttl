@@ -7,12 +7,12 @@
 @prefix dc: <http://purl.org/dc/elements/1.1/> .
 @prefix adms: <http://www.w3.org/ns/adms#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
-@prefix dwds: <http://dwim.xyz/schemas/2024/01/dataset#> .
+@prefix dwim: <http://dwim.xyz/schemas/2024/01/dataset#> .
 
 <http://dwim.xyz/datasets/2024/01/dataset#Bootstrap>
-    a dwds:DatasetDescription ;
-    dcterms:title "Bootstrap datasets for DWIM" ;
-    dcterms:description "The Bootstrap datasets for DWIM" ;
+    a dwim:DatasetDescription ;
+    dcterms:title "Bootstrap datasets for DWIM itself" ;
+    dcterms:description "The Bootstrap datasets for DWIM itself" ;
     dcterms:creator <http://dwim.xyz/people/2024/01/creator> ;
     dcterms:created "2024-01-01"^^xsd:date ;
     dcterms:modified "2024-01-01"^^xsd:date ;
@@ -25,44 +25,44 @@
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#testing>
-    a dwds:Dataset ;
-    dwds:inputPath "../../schemas/testing/" ;
-    dwds:outputPath "../../gen/schemas/testing/" ;
+    a dwim:Dataset ;
+    dwim:inputPath "../../schemas/testing/" ;
+    dwim:outputPath "../../gen/schemas/testing/" ;
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#rdf>
-    a dwds:Dataset ;
+    a dwim:Dataset ;
     dcterms:title "RDF Schema" ;
-    dwds:inputPath "../../schemas/w3_org/" ;
-    dwds:outputPath "../../gen/schemas/w3_org/" ;
+    dwim:inputPath "../../schemas/w3_org/" ;
+    dwim:outputPath "../../gen/schemas/w3_org/" ;
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#schema_org>
-    a dwds:Dataset ;
-    dwds:inputPath "../../schemas/schema_org/" ;
-    dwds:outputPath "../../gen/schemas/schema_org/" ;
+    a dwim:Dataset ;
+    dwim:inputPath "../../schemas/schema_org/" ;
+    dwim:outputPath "../../gen/schemas/schema_org/" ;
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#vocab_org>
-    a dwds:Dataset ;
-    dwds:inputPath "../../schemas/vocab_org/" ;
-    dwds:outputPath "../../gen/schemas/vocab_org/" ;
+    a dwim:Dataset ;
+    dwim:inputPath "../../schemas/vocab_org/" ;
+    dwim:outputPath "../../gen/schemas/vocab_org/" ;
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#foaf>
-    a dwds:Dataset ;
-    dwds:inputPath "../../schemas/foaf/" ;
-    dwds:outputPath "../../gen/schemas/foaf/" ;
+    a dwim:Dataset ;
+    dwim:inputPath "../../schemas/foaf/" ;
+    dwim:outputPath "../../gen/schemas/foaf/" ;
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#rdfs>
-    a dwds:Dataset ;
-    dwds:inputPath "../../schemas/rdfs/" ;
-    dwds:outputPath "../../gen/schemas/rdfs/" ;
+    a dwim:Dataset ;
+    dwim:inputPath "../../schemas/rdfs/" ;
+    dwim:outputPath "../../gen/schemas/rdfs/" ;
 .
 
 <http://dwim.xyz/datasets/2024/01/dataset#blondie>
-    a dwds:Dataset ;
-    dwds:inputPath "../../schemas/blondie/" ;
-    dwds:outputPath "../../gen/schemas/blondie/" ;
+    a dwim:Dataset ;
+    dwim:inputPath "../../schemas/blondie/" ;
+    dwim:outputPath "../../gen/schemas/blondie/" ;
 .

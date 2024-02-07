@@ -1,4 +1,4 @@
-package src_generators
+package golang
 
 import (
 	"fmt"
@@ -9,17 +9,11 @@ import (
 	"text/template"
 
 	"github.com/deronyan-llc/columbo/internal/common"
+	"github.com/deronyan-llc/columbo/internal/generators"
 )
 
 type GoSrcGenerator struct {
-	SrcGenerator
-}
-
-// combine all the imports and types from all the classes together
-type GoStructs struct {
-	Package string
-	Imports []string
-	Classes []*common.SchemaClass
+	generators.SrcGenerator
 }
 
 // generateGoCode generates GoLang code based on the given SchemaClass map.
@@ -38,12 +32,12 @@ import (
 {{- if .Classes }}
 	{{- range .Classes }}
 
-// {{ .Name | localName | sanitizeName | title }} is a generated struct representing the {{ .Name }} class.
-type {{ .Name | localName | sanitizeName | title }} struct {
+// {{ .TermString | localName | sanitizeName | title }} is a generated struct representing the <{{ .TermString }}> class.
+type {{ .TermString | localName | sanitizeName | title }} struct {
 		{{- if .Properties }}
 			{{- range .Properties }}
-	{{ .Name | localName | sanitizeName | title }} {{ .LangType }} ` +
-		"`json:\"{{ .Name | localName | sanitizeName | lower }}\"`" +
+	{{ .TermString | localName | sanitizeName | title }} {{ .LangType }} ` +
+		"`json:\"{{ .TermString | localName | sanitizeName | lower }}\"`" +
 		"{{ .Comment }}" + `
 			{{- end }}
 		{{- end }}
@@ -71,7 +65,7 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 		schemaContext.SchemaPath.StrippedFileName,
 	)
 
-	goStructs := GoStructs{
+	goStructs := &GoStructs{
 		Package: schemaContext.SchemaPath.StrippedFileName,
 		Imports: []string{},
 		Classes: []*common.SchemaClass{},
@@ -83,6 +77,11 @@ type {{ .Name | localName | sanitizeName | title }} struct {
 			}
 		}
 		goStructs.Classes = append(goStructs.Classes, classes)
+	}
+
+	// now map all of the classes to their GoStructs
+	for _, class := range goStructs.Classes {
+		SourceMap[class.Term] = goStructs
 	}
 
 	// Generate a Go source for the classes...
