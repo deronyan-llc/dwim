@@ -13,12 +13,12 @@
             "args": [ "../../schemas/dwim/", "../../gen/schemas/dwim/" ]
         },
         {
-            "name": "Schema Gen (Columbo)",
+            "name": "Schema Gen (dwim)",
             "type": "go",
             "request": "launch",
             "mode": "debug",
             "program": "${workspaceFolder}/cmd/schema_gen/main.go",
-            "args": [ "../../schemas/columbo/", "../../gen/schemas/columbo/" ]
+            "args": [ "../../schemas/dwim/", "../../gen/schemas/dwim/" ]
         },
         {
             "name": "Schema Gen (schema.org)",

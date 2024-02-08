@@ -1,7 +1,7 @@
 package golang
 
 import (
-	"github.com/deronyan-llc/columbo/internal/common"
+	"github.com/deronyan-llc/dwim/internal/common"
 	"github.com/deronyan-llc/rdf/rdf"
 )
 

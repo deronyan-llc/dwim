@@ -5,8 +5,8 @@ import (
 	"os"
 	"slices"
 
-	"github.com/deronyan-llc/columbo/internal/common"
-	"github.com/deronyan-llc/columbo/internal/consts"
+	"github.com/deronyan-llc/dwim/internal/common"
+	"github.com/deronyan-llc/dwim/internal/consts"
 	"github.com/deronyan-llc/rdf/rdf"
 )
 

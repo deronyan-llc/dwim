@@ -5,9 +5,9 @@ import (
 	"log"
 	"os"
 
-	"github.com/deronyan-llc/columbo/internal/generators"
-	"github.com/deronyan-llc/columbo/internal/generators/golang"
-	"github.com/deronyan-llc/columbo/internal/parsers"
+	"github.com/deronyan-llc/dwim/internal/generators"
+	"github.com/deronyan-llc/dwim/internal/generators/golang"
+	"github.com/deronyan-llc/dwim/internal/parsers"
 )
 
 func main() {

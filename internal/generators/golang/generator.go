@@ -8,8 +8,8 @@ import (
 	"strings"
 	"text/template"
 
-	"github.com/deronyan-llc/columbo/internal/common"
-	"github.com/deronyan-llc/columbo/internal/generators"
+	"github.com/deronyan-llc/dwim/internal/common"
+	"github.com/deronyan-llc/dwim/internal/generators"
 )
 
 type GoSrcGenerator struct {

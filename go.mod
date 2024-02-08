@@ -1,4 +1,4 @@
-module github.com/deronyan-llc/columbo
+module github.com/deronyan-llc/dwim
 
 go 1.21.5
 
